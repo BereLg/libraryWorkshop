@@ -2,19 +2,17 @@ package globantWorkshop.controllers;
 
 import globantWorkshop.models.entities.Book;
 import globantWorkshop.services.implementation.BookService;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by leandromaro on 29/10/16.
@@ -29,7 +27,15 @@ public class BookController {
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     public List<Book> getAllBooks(){
-        return new ArrayList<>();
+        return bookService.getAllBooks();
+    }
+
+    @RequestMapping(value = "{id}", method = RequestMethod.GET)
+    @ResponseBody
+    public List<Book> getABook(@PathVariable Integer id){
+        List<Book> l = new ArrayList<Book>();
+        l.add(bookService.findBookById(id));
+        return l;
     }
 
     /**
@@ -37,9 +43,8 @@ public class BookController {
      */
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<Book> create(@RequestBody Book book) {
-        //Should Be implemented
-        Book newBook = new Book();
+    public ResponseEntity<Book> create(@RequestBody Book book) throws PersistenceException {
+        Book newBook = bookService.create(book);
         return new ResponseEntity<Book>(newBook, HttpStatus.CREATED);
     }
 
@@ -50,9 +55,8 @@ public class BookController {
      */
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     @ResponseBody
-    public String delete (@PathVariable Integer bookId) {
-        //Should Be implemented
-        return "Should Be implemented";
+    public String delete (@PathVariable Integer id) {
+        return bookService.delete(id);
     }
 
     /**
@@ -61,7 +65,8 @@ public class BookController {
     @RequestMapping(value = "{id}", method = RequestMethod.PUT)
     @ResponseBody
     public String updateName(@PathVariable Integer bookId, @RequestBody Book bookParam){
-        return "Should Be implemented";
+        Book b = bookService.findBookById(bookId);
+        return bookService.updateBook(b);
     }
     /**
      * Method created to handle the controller's exceptions, so the malformed request are responded in the controller layer

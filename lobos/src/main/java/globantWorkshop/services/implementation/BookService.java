@@ -30,31 +30,53 @@ public class BookService implements BookServiceInterface {
 
     @Override
     public ArrayList<Book> getAllBooks() {
-        //Should Be implemented
         List<Book> books = new ArrayList<Book>();
+        try {
+            books = bookDao.getAllBooks();
+        }
+        catch (Exception e){
+            throw e;
+        }
         return (ArrayList<Book>) books;
     }
 
     @Override
     public Book create(Book book) throws PersistenceException {
-        //Should Be implemented
-        return new Book();
+        bookDao.create(book);
+        return book;
     }
 
     @Override
     public String delete(int id) {
-        return "Should Be implemented\n";
+        Book b = bookDao.getById(id);
+        bookDao.delete(b);
+        return "Book successfully deleted!";
     }
 
     @Override
-    public String updateBook(Book newBook){
-        return "Should Be implemented";
+    public String updateBook(Book newBook)
+    {
+        String msg = "Error updating the book "+ newBook.getName();
+        try {
+            bookDao.update(newBook);
+            msg = "Book successfully updated!";
+
+        } catch (Exception e) {
+            msg+="\n Error: "+e.toString();
+        }
+        return msg;
     }
 
     @Override
     public Book findBookById(int bookId) throws TransactionSystemException {
         Book book = new Book();
-        //Should Be implemented
+        try{
+            book = bookDao.getById(bookId);
+
+        }
+        catch (Exception e) {
+            throw e;
+        }
         return book;
     }
 
